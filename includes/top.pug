@@ -30,9 +30,10 @@ html(lang="ja")
             // 記事
             article
               each entry in entries
+                //-each val in texts
                 h2= entry.title
-                div 作成日時：#{entry.created_at}
-                div 更新日時：#{entry.updated_at}
+                //-div 作成日時：#{entry.created_at}
+                //-div 更新日時：#{entry.updated_at}
                 div= entry.text
                 div(class="btn-group" role="group")
                   form(method="post" action="/entry/edit")
