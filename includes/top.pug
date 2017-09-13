@@ -35,7 +35,7 @@ html(lang="ja")
                 //-div 作成日時：#{entry.created_at}
                 //-div 更新日時：#{entry.updated_at}
                 div= entry.text
-                div(class="btn-group" role="group")
+                div(class="btn-group" role="group" name="edit" value=entry.id)
                   form(method="post" action="/entry/edit")
                     //- ハリボテ
                     input(class="btn btn-warning btn-sm" type="submit" value="編集")

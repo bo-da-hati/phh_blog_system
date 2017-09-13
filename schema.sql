@@ -13,6 +13,7 @@ CREATE TABLE `user` (
        `nickname` VARCHAR(32),	-- ニックネーム
        `blood_type_id` INT,	-- 血液型(blood_type テーブルの id に対応する
        `birthday` DATE,		-- 誕生日
+       -- `choiceblood`　VARCHAR(8) NOT NULL		     -- 選ばれた血液型
        `updated_at` timestamp not null default current_timestamp on update current_timestamp -- 更新日時
 );
 -- テストデータを挿入する
@@ -26,10 +27,11 @@ CREATE TABLE `blood_type` (
        `type` VARCHAR(8) NOT NULL		     -- 血液型
 );
 -- データを挿入する
-INSERT INTO `blood_type` (`type`) VALUES ('Ａ型');
+INSERT INTO `blood_type` (`type`) VALUES ('A型');
 INSERT INTO `blood_type` (`type`) VALUES ('Ｂ型');
 INSERT INTO `blood_type` (`type`) VALUES ('ＡＢ型');
 INSERT INTO `blood_type` (`type`) VALUES ('Ｏ型');
+-- INSERT INTO `blood_type` (`choice_blood`) VALUES ('A型');
 COMMIT;
 
 -- 記事エントリテーブルの削除と作成をする
@@ -61,3 +63,11 @@ INSERT INTO `tag` (`name`) VALUES ('プライベート');
 COMMIT;
 
 SET AUTOCOMMIT=1;
+-- 指定された血液型を格納するだけのテーブルの削除と作成をする
+-- DROP TABLE IF EXISTS `choice_blood`;
+-- CREATE TABLE `choice_blood` (
+--        `id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT, -- 主キー
+--        `blood` VARCHAR(8) NOT NULL		     -- 選択された血液型
+-- );
+-- INSERT INTO `choice` (`blood`) VALUES ('A型');
+-- COMMIT;
