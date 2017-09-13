@@ -14,10 +14,10 @@ html(lang="ja")
 
     div(class="container")
       h1 投稿
-      form(class="form-group" action="/entry/post/add", method="post")
+      form(class="form-group" action=choiceUrl, method="post")
         div(class="row")
           div(class="col-md-7")
-            input(class="form-control" type="text" name="title" placeholder="タイトル")
+            input(class="form-control" type="text" name="title" placeholder="タイトル" value=title)
           div(class="col-md-1") タグ 
           div(class="col-md-4")
             select(class="form-control" name="tags")
@@ -25,7 +25,7 @@ html(lang="ja")
                 option(value=val.id) #{val.name}
         div(class="row")
           div(class="col")
-            textarea(class="form-control" name="entry" placeholder="記事" rows="8")
+            textarea(class="form-control" name="entry" placeholder="記事" rows="8") #{entry}
         div(class="row")
           div(class="col")
             input(class="btn btn-primary" type="submit" value="投稿")

@@ -26,6 +26,9 @@ const server = http.createServer((req, res) => {
         case '/entry/post':
           showPostPage(req, res);
           break;
+        case '/entry/edit':
+          showEditPage(req, res);
+          break;
         default:
           res.end();
           break;
@@ -37,7 +40,7 @@ const server = http.createServer((req, res) => {
         case '/entry/post/add':
           postNewEntry(req, res);
           break;
-          case '/profile/update':
+        case '/profile/update':
           profileNewEntry(req, res);
           break;
         case '/entry/edit':
@@ -232,6 +235,7 @@ function showProfilePage(req, res) {
 // 投稿ページを表示する
 function showPostPage(req, res) {
   let connection;
+  let choiceUrl = "/entry/post/add";
 
   mysql.createConnection({
     host: 'localhost',
@@ -245,6 +249,7 @@ function showPostPage(req, res) {
     res.write(pug.renderFile('./includes/post.pug',
       {
         tags: rows,
+        choiceUrl: choiceUrl
       }));
     connection.end();
     res.end();
@@ -253,9 +258,10 @@ function showPostPage(req, res) {
   });
 }
 //記事の変更を行う処理
-function showEditPage(req, res) {
+function showEditPage(req, res, edit_id, title, entry) {
   let connection;
-  let editid;
+  let choiceUrl = "/entry/edit";
+  let tags;
 
   mysql.createConnection({
     host: 'localhost',
@@ -264,17 +270,29 @@ function showEditPage(req, res) {
     database: DB_NAME
   }).then((conn) => {
     connection = conn;
-    return connection.query('SELECT * FROM entry');
+    return connection.query('SELECT * FROM tag');
   }).then((rows) => {
-
-
+    tags = rows;
+    //  for (var row of rows) {
+    //  edit_id.push(row[0].user_id);
+    //  }
+    // return connection.query('select title, text from entry WHERE id=(?)',
+    //   [
+    //     edit_id
+    //   ]);
+  // }).then((rows) => {
+  //   edit.push(rows);
 
     res.write(pug.renderFile('./includes/post.pug',
       {
-        //tags: rows,
+        tags: tags,
+        choiceUrl: choiceUrl,
+        title: title,
+        entry: entry
       }));
     connection.end();
     res.end();
+    NeweditEntry(req, res, edit_id);
   }).catch((error) => {
     console.log(error);
   });
@@ -386,10 +404,10 @@ function editEntry(req, res) {
     const querystring = require('querystring');
 
     let parsedResult = querystring.parse(decoded);
-    // let title = parsedResult['title'];
-    // let entry = parsedResult['entry'];
+    let title = parsedResult['edit_title'];
+    let entry = parsedResult['edit_text'];
     // let tag = parsedResult['tags'];
-    let editid = parsedResult['edit'];
+    let edit_id = parsedResult['edit_id'];
     let connection;
 
     //編集ページに移動（showEditPage(req, res);）
@@ -401,18 +419,68 @@ function editEntry(req, res) {
 
     }).then((conn) => {
       connection = conn;
+    //   conn.query('UPDATE entry SET user_id = ?',
+    //     [
+    //       edit_id
+    //     ]);
 
-      conn.query('UPDATE entry SET user_id = ?',
-        [
-          editid
-        ]);
+    // }).then(() => {
+    //   connection.query('update entry set title = ?,text = ? where id = ?',
+    //     [
+    //       title,
+    //       entry,
+    //       edit_id
+    //     ]);
+
     }).then(() => {
       connection.end();
-      //showEditPage(req, res);
+      showEditPage(req, res, edit_id, title, entry);
+      //res.end();
     }).catch((error) => {
       console.log(error);
     });
   });
-
 }
+//編集された記事内容とタイトルを更新する
+function NeweditEntry(req, res, edit_id){
+  req.on('data', (data) => {
+    const decoded = decodeURIComponent(data);
+    const querystring = require('querystring');
 
+    let parsedResult = querystring.parse(decoded);
+    let title = parsedResult['edit_title'];
+    let entry = parsedResult['edit_text'];
+    // let tag = parsedResult['tags'];
+    let connection;
+
+    
+    mysql.createConnection({
+      host: 'localhost',
+      user: DB_USER,         // 'root'
+      password: DB_PASSWD,   // ''
+      database: DB_NAME,
+
+    }).then((conn) => {
+      connection = conn;
+    //   conn.query('UPDATE entry SET user_id = ?',
+    //     [
+    //       edit_id
+    //     ]);
+
+    }).then(() => {
+      connection.query('update entry set title = ?,text = ? where id = ?',
+        [
+          title,
+          entry,
+          edit_id
+        ]);
+
+    }).then(() => {
+      connection.end();
+      res.end();
+      showTopPage(req, res);
+    }).catch((error) => {
+      console.log(error);
+    });
+  });
+}

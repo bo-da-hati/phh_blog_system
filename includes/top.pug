@@ -35,10 +35,15 @@ html(lang="ja")
                 //-div 作成日時：#{entry.created_at}
                 //-div 更新日時：#{entry.updated_at}
                 div= entry.text
-                div(class="btn-group" role="group" name="edit" value=entry.id)
+                div(class="btn-group" role="group")
                   form(method="post" action="/entry/edit")
                     //- ハリボテ
                     input(class="btn btn-warning btn-sm" type="submit" value="編集")
+                    input(class="btn btn-warning btn-sm" type="hidden" name="edit_id" value=entry.id)
+                    input(class="btn btn-warning btn-sm" type="hidden" name="edit_title" value=entry.title)
+                    input(class="btn btn-warning btn-sm" type="hidden" name="edit_text" value=entry.text)
+
+
                   form(method="post" action="/entry/delete")
                     //- ハリボテ
                     input(class="btn btn-danger btn-sm" type="submit" value="削除")
