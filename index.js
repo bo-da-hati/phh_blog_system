@@ -20,14 +20,14 @@ const server = http.createServer((req, res) => {
         case '/':
           showTopPage(req, res);
           break;
+        case '/entry/edit':
+          showEditPage(req, res);
+          break;
         case '/profile':
           showProfilePage(req, res);
           break;
         case '/entry/post':
           showPostPage(req, res);
-          break;
-        case '/entry/edit':
-          showEditPage(req, res);
           break;
         default:
           res.end();
@@ -40,11 +40,14 @@ const server = http.createServer((req, res) => {
         case '/entry/post/add':
           postNewEntry(req, res);
           break;
-        case '/profile/update':
-          profileNewEntry(req, res);
-          break;
         case '/entry/edit':
           editEntry(req, res);
+          break;
+        case '/entry/edit/update':
+          updateEntry(req, res)
+          break;
+        case '/profile/update':
+          profileNewEntry(req, res);
           break;
         default:
           res.end();
@@ -225,7 +228,7 @@ function showProfilePage(req, res) {
 
     }));
 
-    connection.end(); 1
+    connection.end();
     res.end();
   }).catch((error) => {
     console.log(error);
@@ -252,7 +255,7 @@ function showPostPage(req, res) {
         choiceUrl: choiceUrl
       }));
     connection.end();
-    res.end();
+    //res.end();
   }).catch((error) => {
     console.log(error);
   });
@@ -260,7 +263,7 @@ function showPostPage(req, res) {
 //記事の変更を行う処理
 function showEditPage(req, res, edit_id, title, entry) {
   let connection;
-  let choiceUrl = "/entry/edit";
+  let choiceUrl = "/entry/edit/update";
   let tags;
 
   mysql.createConnection({
@@ -280,19 +283,20 @@ function showEditPage(req, res, edit_id, title, entry) {
     //   [
     //     edit_id
     //   ]);
-  // }).then((rows) => {
-  //   edit.push(rows);
+    // }).then((rows) => {
+    //   edit.push(rows);
 
     res.write(pug.renderFile('./includes/post.pug',
       {
         tags: tags,
         choiceUrl: choiceUrl,
+        edit_id: edit_id,
         title: title,
         entry: entry
       }));
     connection.end();
     res.end();
-    NeweditEntry(req, res, edit_id);
+    //updateEntry(req, res, edit_id);
   }).catch((error) => {
     console.log(error);
   });
@@ -419,21 +423,21 @@ function editEntry(req, res) {
 
     }).then((conn) => {
       connection = conn;
-    //   conn.query('UPDATE entry SET user_id = ?',
-    //     [
-    //       edit_id
-    //     ]);
+      //   conn.query('UPDATE entry SET user_id = ?',
+      //     [
+      //       edit_id
+      //     ]);
 
-    // }).then(() => {
-    //   connection.query('update entry set title = ?,text = ? where id = ?',
-    //     [
-    //       title,
-    //       entry,
-    //       edit_id
-    //     ]);
+      // }).then(() => {
+      //   connection.query('update entry set title = ?,text = ? where id = ?',
+      //     [
+      //       title,
+      //       entry,
+      //       edit_id
+      //     ]);
 
     }).then(() => {
-      connection.end();
+      //connection.end();
       showEditPage(req, res, edit_id, title, entry);
       //res.end();
     }).catch((error) => {
@@ -442,18 +446,19 @@ function editEntry(req, res) {
   });
 }
 //編集された記事内容とタイトルを更新する
-function NeweditEntry(req, res, edit_id){
+function updateEntry(req, res) {
   req.on('data', (data) => {
     const decoded = decodeURIComponent(data);
     const querystring = require('querystring');
 
     let parsedResult = querystring.parse(decoded);
-    let title = parsedResult['edit_title'];
-    let entry = parsedResult['edit_text'];
+    let title = parsedResult['title'];
+    let entry = parsedResult['entry'];
+    let edit_id = parsedResult['edit.id'];
     // let tag = parsedResult['tags'];
     let connection;
 
-    
+
     mysql.createConnection({
       host: 'localhost',
       user: DB_USER,         // 'root'
@@ -462,10 +467,10 @@ function NeweditEntry(req, res, edit_id){
 
     }).then((conn) => {
       connection = conn;
-    //   conn.query('UPDATE entry SET user_id = ?',
-    //     [
-    //       edit_id
-    //     ]);
+      //   conn.query('UPDATE entry SET user_id = ?',
+      //     [
+      //       edit_id
+      //     ]);
 
     }).then(() => {
       connection.query('update entry set title = ?,text = ? where id = ?',
@@ -477,7 +482,7 @@ function NeweditEntry(req, res, edit_id){
 
     }).then(() => {
       connection.end();
-      res.end();
+      //res.end();
       showTopPage(req, res);
     }).catch((error) => {
       console.log(error);
