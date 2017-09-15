@@ -20,6 +20,9 @@ const server = http.createServer((req, res) => {
         case '/':
           showTopPage(req, res);
           break;
+        case '/page/own':
+          showTopPage(req, res);
+          break;
         case '/page/two':
           showTwoPage(req, res);
           break;
@@ -46,6 +49,9 @@ const server = http.createServer((req, res) => {
         case '/entry/post/add':
           postNewEntry(req, res);
           break;
+        // case '/top/page':
+        //   postNewEntry(req, res);
+        //   break;
         case '/entry/edit':
           editEntry(req, res);
           break;
@@ -104,14 +110,14 @@ function showTopPage(req, res) {
         entries.push(rows[i]);
       }
     }
-      return connection.query('SELECT * FROM tag');
-    }).then((rows) => {
-      for (let row of rows) {
-        tags.push({
-          tag: row,
-          query: querystring.stringify(row),
-        });
-      }
+    return connection.query('SELECT * FROM tag');
+  }).then((rows) => {
+    for (let row of rows) {
+      tags.push({
+        tag: row,
+        query: querystring.stringify(row),
+      });
+    }
 
     res.write(pug.renderFile('./includes/top.pug', {
       entries: entries, //記事内容
@@ -141,20 +147,17 @@ function showTwoPage(req, res) {
     connection = conn;
     return connection.query("SELECT * FROM entry");
   }).then((rows) => {
-
-    entries = rows;
-    return connection.query('SELECT * FROM tag');
-
-  }).then((rows) => {
-    if (rows.length < 6) {
-      entries = rows;
+    if (rows.length < 11) {
+      for (let i = 5; i < rows.length; i++) {
+        entries.push(rows[i]);
+      }
     } else {
-      for (let i = 0; i < 5; i++) {
-        // for (let row of rows) {
-          entries = rows[i];
+      for (let i = 5; i < 10; i++) {
+        entries.push(rows[i]);
       }
     }
-
+    //entries = rows;
+    return connection.query('SELECT * FROM tag');
   }).then((rows) => {
     for (let row of rows) {
       tags.push({
@@ -191,8 +194,15 @@ function showThreePage(req, res) {
     connection = conn;
     return connection.query("SELECT * FROM entry");
   }).then((rows) => {
-
-    entries = rows;
+    if (rows.length < 16) {
+      for (let i = 10; i < rows.length; i++) {
+        entries.push(rows[i]);
+      }
+    } else {
+      for (let i = 10; i < 15; i++) {
+        entries.push(rows[i]);
+      }
+    }
     return connection.query('SELECT * FROM tag');
   }).then((rows) => {
     for (let row of rows) {
@@ -206,7 +216,7 @@ function showThreePage(req, res) {
     res.write(pug.renderFile('./includes/top.pug', {
       //entries: entries, //記事内容
       tags: tags,　　　//タグ？
-
+      entries: entries
     }));
     connection.end();
     res.end();
@@ -428,6 +438,7 @@ function postNewEntry(req, res) {
     }).then(() => {
       connection.end();
       showTopPage(req, res);
+      showTwoPage(req, res);
     }).catch((error) => {
       console.log(error);
     });
