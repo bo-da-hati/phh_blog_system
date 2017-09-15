@@ -47,6 +47,7 @@ html(lang="ja")
                   form(method="post" action="/entry/delete")
                     //- ハリボテ
                     input(class="btn btn-danger btn-sm" type="submit" value="削除")
+                    input(class="btn btn-warning btn-sm" type="hidden" name="edit_id" value=entry.id)
 
           // ページネーション
           //- ハリボテ
@@ -56,12 +57,12 @@ html(lang="ja")
                 li(class="page-item disabled")
                   a(class="page-link" href="#" tabindex="-1") Previous
                 li(class="page-item active")
-                  a(class="page-link" href="#") 1
+                  a(class="page-link" href="/page/own") 1
                   span(class="sr-only") (current)
                 li(class="page-item")
-                  a(class="page-link" href="#") 2
+                  a(class="page-link" href="/page/two") 2
                 li(class="page-item")
-                  a(class="page-link" href="#") 3
+                  a(class="page-link" href="/page/three") 3
                 li(class="page-item")
                   a(class="page-link" href="#") Next
     footer

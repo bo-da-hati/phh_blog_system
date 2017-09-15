@@ -20,6 +20,12 @@ const server = http.createServer((req, res) => {
         case '/':
           showTopPage(req, res);
           break;
+        case '/page/two':
+          showTwoPage(req, res);
+          break;
+        case '/page/three':
+          showThreePage(req, res);
+          break;
         case '/entry/edit':
           showEditPage(req, res);
           break;
@@ -43,6 +49,9 @@ const server = http.createServer((req, res) => {
         case '/entry/edit':
           editEntry(req, res);
           break;
+        case '/entry/delete':
+          deleteEntry(req, res);
+          break
         case '/entry/edit/update':
           updateEntry(req, res)
           break;
@@ -73,7 +82,8 @@ server.listen(port, () => {
 // トップページを表示する
 function showTopPage(req, res) {
   let connection;
-  let entries;
+  //let entry = [];
+  let entries = [];
   let tags = []
   //let texts = [];
 
@@ -86,9 +96,102 @@ function showTopPage(req, res) {
     connection = conn;
     return connection.query("SELECT * FROM entry");
   }).then((rows) => {
-    //for (var row of rows) {
-    //texts.push([row.text]); //入力された新しいブログの記事
-    //}
+    //entries = rows;
+    if (rows.length < 6) {
+      entries = rows;
+    } else {
+      for (let i = 0; i < 5; i++) {
+        entries.push(rows[i]);
+      }
+    }
+      return connection.query('SELECT * FROM tag');
+    }).then((rows) => {
+      for (let row of rows) {
+        tags.push({
+          tag: row,
+          query: querystring.stringify(row),
+        });
+      }
+
+    res.write(pug.renderFile('./includes/top.pug', {
+      entries: entries, //記事内容
+      tags: tags,　　　//タグ？
+    }));
+  }).then((rows) => {
+    connection.end();
+    res.end();
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+//セカンドページの実装
+function showTwoPage(req, res) {
+  let connection;
+  let entries = [];
+  let tags = []
+  //let choiceUrl = "/entry/edit/update";
+  //let texts = [];
+
+  mysql.createConnection({
+    host: 'localhost',
+    user: DB_USER,
+    password: DB_PASSWD,
+    database: DB_NAME
+  }).then((conn) => {
+    connection = conn;
+    return connection.query("SELECT * FROM entry");
+  }).then((rows) => {
+
+    entries = rows;
+    return connection.query('SELECT * FROM tag');
+
+  }).then((rows) => {
+    if (rows.length < 6) {
+      entries = rows;
+    } else {
+      for (let i = 0; i < 5; i++) {
+        // for (let row of rows) {
+          entries = rows[i];
+      }
+    }
+
+  }).then((rows) => {
+    for (let row of rows) {
+      tags.push({
+        tag: row,
+        query: querystring.stringify(row),
+      });
+    }
+
+    res.write(pug.renderFile('./includes/top.pug', {
+      entries: entries, //記事内容
+      tags: tags,　　　//タグ？
+    }));
+    connection.end();
+    res.end();
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+//サードページの実装
+function showThreePage(req, res) {
+  let connection;
+  let entries = [];
+  let tags = []
+  //let choiceUrl = "/entry/edit/update";
+  //let texts = [];
+
+  mysql.createConnection({
+    host: 'localhost',
+    user: DB_USER,
+    password: DB_PASSWD,
+    database: DB_NAME
+  }).then((conn) => {
+    connection = conn;
+    return connection.query("SELECT * FROM entry");
+  }).then((rows) => {
+
     entries = rows;
     return connection.query('SELECT * FROM tag');
   }).then((rows) => {
@@ -101,7 +204,7 @@ function showTopPage(req, res) {
 
 
     res.write(pug.renderFile('./includes/top.pug', {
-      entries: entries, //記事内容
+      //entries: entries, //記事内容
       tags: tags,　　　//タグ？
 
     }));
@@ -111,6 +214,7 @@ function showTopPage(req, res) {
     console.log(error);
   });
 }
+
 
 // プロフィールページを表示する
 function showProfilePage(req, res) {
@@ -164,21 +268,6 @@ function showProfilePage(req, res) {
       blood[i]["selection"] = bloods_ary[i];
     }
 
-
-
-    // for (var row of rows) {
-    //   blood.push(row.id);
-    //   //bloodid.push(row.id);
-    // }
-    //bloodchoice = rows[0].choice_blood;
-
-
-    //   return connection.query("select type from blood_type WHERE id=(?)",
-    //     [
-    //       id
-    //     ]);
-    // }).then((rows) => {
-    //   blood = rows[0];//選ばれた血液（type)
     console.log(blood);
     return connection.query("select type from blood_type WHERE id=(?)",
       [
@@ -483,6 +572,41 @@ function updateEntry(req, res) {
     }).then(() => {
       connection.end();
       //res.end();
+      showTopPage(req, res);
+    }).catch((error) => {
+      console.log(error);
+    });
+  });
+}
+//記事が削除された時の実装
+function deleteEntry(req, res) {
+  req.on('data', (data) => {
+    const decoded = decodeURIComponent(data);
+    const querystring = require('querystring');
+
+    let parsedResult = querystring.parse(decoded);
+    let edit_id = parsedResult['edit_id'];
+    // let tag = parsedResult['tags'];
+    let connection;
+
+
+    mysql.createConnection({
+      host: 'localhost',
+      user: DB_USER,         // 'root'
+      password: DB_PASSWD,   // ''
+      database: DB_NAME,
+
+    }).then((conn) => {
+      connection = conn;
+
+    }).then(() => {
+      connection.query('DELETE FROM entry WHERE id IN(?)',
+        [
+          edit_id
+        ]);
+
+    }).then(() => {
+      connection.end();
       showTopPage(req, res);
     }).catch((error) => {
       console.log(error);
