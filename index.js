@@ -438,7 +438,7 @@ function postNewEntry(req, res) {
     }).then(() => {
       connection.end();
       showTopPage(req, res);
-      showTwoPage(req, res);
+      //showTwoPage(req, res);
     }).catch((error) => {
       console.log(error);
     });
