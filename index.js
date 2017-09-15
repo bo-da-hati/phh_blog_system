@@ -49,9 +49,6 @@ const server = http.createServer((req, res) => {
         case '/entry/post/add':
           postNewEntry(req, res);
           break;
-        // case '/top/page':
-        //   postNewEntry(req, res);
-        //   break;
         case '/entry/edit':
           editEntry(req, res);
           break;
