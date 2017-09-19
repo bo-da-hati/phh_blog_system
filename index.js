@@ -40,6 +40,12 @@ const server = http.createServer((req, res) => {
         case '/entry/post':
           showPostPage(req, res);
           break;
+        case '/tag':
+          showTagPage(req, res);
+          break;
+        // case '/tag/add':
+        //   showTagPage(req, res);
+        //   break;
         default:
           res.end();
           break;
@@ -62,6 +68,9 @@ const server = http.createServer((req, res) => {
           break;
         case '/profile/update':
           profileNewEntry(req, res);
+          break;
+        case '/tag/add':
+          tagNewEntry(req, res);
           break;
         default:
           res.end();
@@ -243,35 +252,27 @@ function showThreePage(req, res) {
     console.log(error);
   });
 }
-//Nextが押された時のページングの処理
-function showNextPage(req, res) {
-  // let pathname = location.pathname;
-  // console.log(pathname);
-  // switch (req.method) {
-  //   case 'GET':
-  //     switch (req.url) {
-  //       case '/':
-  //         showTwoPage(req, res);
-  //         break;
-  //       case '/page/own':
-  //         showTwoPage(req, res);
-  //         break;
-  //       case '/page/two':
-  //         showThreePage(req, res);
-  //         break;
-  //       case '/page/three':
-  //         showTopPage(req, res);
-  //         break;
-  //     }
-  //     break;
-  //   default:
-  //     //res.end();
-  //     break;
-  // }
-  //let id = document.getElementById('page');
- // console.log(id);
-}
+//タグ追加を行うページを表示する
+function showTagPage(req, res) {
+  let connection;
 
+  mysql.createConnection({
+    host: 'localhost',
+    user: DB_USER,
+    password: DB_PASSWD,
+    database: DB_NAME
+  }).then((conn) => {
+    connection = conn;
+  }).then((rows) => {
+    res.write(pug.renderFile('./includes/tag_post.pug',
+      {
+      }));
+    connection.end();
+    //res.end();
+  }).catch((error) => {
+    console.log(error);
+  });
+}
 
 // プロフィールページを表示する
 function showProfilePage(req, res) {
@@ -666,6 +667,38 @@ function deleteEntry(req, res) {
     }).then(() => {
       connection.end();
       showTopPage(req, res);
+    }).catch((error) => {
+      console.log(error);
+    });
+  });
+}
+//タグを追加する際、その名前を入力するページの実装
+function tagNewEntry(req, res) {
+  req.on('data', (data) => {
+    const decoded = decodeURIComponent(data);
+    const querystring = require('querystring');
+
+    let parsedResult = querystring.parse(decoded);
+    let tagname = parsedResult['tagname'];
+    let connection;
+
+    mysql.createConnection({
+      host: 'localhost',
+      user: DB_USER,         // 'root'
+      password: DB_PASSWD,   // ''
+      database: DB_NAME,
+
+    }).then((conn) => {
+      connection = conn;
+
+      conn.query('INSERT INTO `tag` (`name`) VALUES (?)',
+        [
+          tagname
+        ]);
+    }).then(() => {
+      connection.end();
+      showTopPage(req, res);
+      //showTwoPage(req, res);
     }).catch((error) => {
       console.log(error);
     });
