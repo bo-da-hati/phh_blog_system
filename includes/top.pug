@@ -54,15 +54,17 @@ html(lang="ja")
           div(class="row")
             nav(aria-label="...")
               ul(class="pagination")
-                li(class="page-item disabled")
-                  a(class="page-link" href="#" tabindex="-1") Previous
-                li(class="page-item active")
-                  a(class="page-link" href="/page/own") 1
+                li(class="page-item")
+                  //-disabled
+                  a(class="page-link" href=previous) Previous
+                li(class=one)
+                  //-active
+                  a(class="page-link" href="/page/one") 1
                   //-span(class="sr-only") (current)
-                li(class="page-item")
+                li(class=two)
                   a(class="page-link" href="/page/two") 2
-                li(class="page-item")
+                li(class=three)
                   a(class="page-link" href="/page/three") 3
                 li(class="page-item")
-                  a(class="page-link" href="#") Next
+                  a(class="page-link" href=next) Next
     footer

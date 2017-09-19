@@ -9,6 +9,8 @@ const DB_USER = process.env['PHH_DB_USER'] || 'root';
 const DB_PASSWD = process.env['PHH_DB_PASSWD'] || '';
 
 
+
+
 const server = http.createServer((req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/html; charset=utf-8'
@@ -20,7 +22,7 @@ const server = http.createServer((req, res) => {
         case '/':
           showTopPage(req, res);
           break;
-        case '/page/own':
+        case '/page/one':
           showTopPage(req, res);
           break;
         case '/page/two':
@@ -87,7 +89,12 @@ function showTopPage(req, res) {
   let connection;
   //let entry = [];
   let entries = [];
-  let tags = []
+  let tags = [];
+  let next = "/page/two";
+  let previous = "/page/three";
+  let one = "page-item active";
+
+
   //let texts = [];
 
   mysql.createConnection({
@@ -119,6 +126,9 @@ function showTopPage(req, res) {
     res.write(pug.renderFile('./includes/top.pug', {
       entries: entries, //記事内容
       tags: tags,　　　//タグ？
+      next: next,
+      previous: previous,
+      one: one
     }));
   }).then((rows) => {
     connection.end();
@@ -131,7 +141,10 @@ function showTopPage(req, res) {
 function showTwoPage(req, res) {
   let connection;
   let entries = [];
-  let tags = []
+  let tags = [];
+  let next = "/page/three";
+  let previous = "/page/one";
+  let two = "page-item active";
   //let choiceUrl = "/entry/edit/update";
   //let texts = [];
 
@@ -165,7 +178,10 @@ function showTwoPage(req, res) {
 
     res.write(pug.renderFile('./includes/top.pug', {
       entries: entries, //記事内容
-      tags: tags,　　　//タグ？
+      tags: tags,
+      next: next,
+      previous: previous,
+      two: two　　　//タグ？
     }));
     connection.end();
     res.end();
@@ -178,7 +194,10 @@ function showTwoPage(req, res) {
 function showThreePage(req, res) {
   let connection;
   let entries = [];
-  let tags = []
+  let tags = [];
+  let next = "/page/one";
+  let previous = "/page/two";
+  let three = "page-item active";
   //let choiceUrl = "/entry/edit/update";
   //let texts = [];
 
@@ -213,13 +232,44 @@ function showThreePage(req, res) {
     res.write(pug.renderFile('./includes/top.pug', {
       //entries: entries, //記事内容
       tags: tags,　　　//タグ？
-      entries: entries
+      entries: entries,
+      next: next,
+      previous: previous,
+      three: three
     }));
     connection.end();
     res.end();
   }).catch((error) => {
     console.log(error);
   });
+}
+//Nextが押された時のページングの処理
+function showNextPage(req, res) {
+  // let pathname = location.pathname;
+  // console.log(pathname);
+  // switch (req.method) {
+  //   case 'GET':
+  //     switch (req.url) {
+  //       case '/':
+  //         showTwoPage(req, res);
+  //         break;
+  //       case '/page/own':
+  //         showTwoPage(req, res);
+  //         break;
+  //       case '/page/two':
+  //         showThreePage(req, res);
+  //         break;
+  //       case '/page/three':
+  //         showTopPage(req, res);
+  //         break;
+  //     }
+  //     break;
+  //   default:
+  //     //res.end();
+  //     break;
+  // }
+  //let id = document.getElementById('page');
+ // console.log(id);
 }
 
 
