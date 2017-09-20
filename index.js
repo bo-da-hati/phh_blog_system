@@ -109,8 +109,8 @@ function showTopPage(req, res) {
   let onepage;
   let twopage;
   let threepage;
-  let next = "/page/two";
-  let previous = "/page/three";
+  let next;
+  let previous;
   let one = "page-item active";
   let choiceUrl = url.parse(req.url, true);
   let choiceUrl2 = url.parse(req.url);
@@ -128,6 +128,8 @@ function showTopPage(req, res) {
       onepage = "/page/one" + choiceUrl2.search;
       twopage = "/page/two" + choiceUrl2.search;
       threepage = "/page/three" + choiceUrl2.search;
+      next = "/page/two" + choiceUrl2.search;
+      previous  = "/page/three" + choiceUrl2.search;
       return connection.query("select * from entry WHERE tag_id=(?)",
         [
           choiceUrl.query.id
@@ -136,6 +138,8 @@ function showTopPage(req, res) {
       onepage = "/page/one";
       twopage = "/page/two";
       threepage = "/page/three";
+      next = "/page/two";
+      previous  = "/page/three";
       return connection.query("SELECT * FROM entry");
     }
   }).then((rows) => {
@@ -183,7 +187,7 @@ function showTwoPage(req, res, querynull, queryid) {
   let twopage;
   let threepage;
   let next = "/page/three";
-  let previous = "/page/one";
+  let previous;
   let two = "page-item active";
   let choiceUrl = url.parse(req.url, true);
   let choiceUrl2 = url.parse(req.url);
@@ -199,6 +203,8 @@ function showTwoPage(req, res, querynull, queryid) {
       onepage = "/page/one" + choiceUrl2.search;
       twopage = "/page/two" + choiceUrl2.search;
       threepage = "/page/three" + choiceUrl2.search;
+      next = "/page/three" + choiceUrl2.search;
+      previous  = "/page/one" + choiceUrl2.search;
       return connection.query("select * from entry WHERE tag_id=(?)",
         [
           choiceUrl.query.id
@@ -207,6 +213,8 @@ function showTwoPage(req, res, querynull, queryid) {
       onepage = "/page/one";
       twopage = "/page/two";
       threepage = "/page/three";
+      next = "/page/three";
+      previous  = "/page/one";
       return connection.query("SELECT * FROM entry");
     }
   }).then((rows) => {
@@ -259,7 +267,7 @@ function showThreePage(req, res, querynull, queryid) {
   let three = "page-item active";
   let choiceUrl = url.parse(req.url, true);
   let choiceUrl2 = url.parse(req.url);
-  
+
   mysql.createConnection({
     host: 'localhost',
     user: DB_USER,
@@ -271,6 +279,8 @@ function showThreePage(req, res, querynull, queryid) {
       onepage = "/page/one" + choiceUrl2.search;
       twopage = "/page/two" + choiceUrl2.search;
       threepage = "/page/three" + choiceUrl2.search;
+      next = "/page/one" + choiceUrl2.search;
+      previous  = "/page/two" + choiceUrl2.search;
       return connection.query("select * from entry WHERE tag_id=(?)",
         [
           choiceUrl.query.id
@@ -279,6 +289,8 @@ function showThreePage(req, res, querynull, queryid) {
       onepage = "/page/one";
       twopage = "/page/two";
       threepage = "/page/three";
+      next = "/page/one";
+      previous  = "/page/two";
       return connection.query("SELECT * FROM entry");
     }
   }).then((rows) => {
