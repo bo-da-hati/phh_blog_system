@@ -1,6 +1,7 @@
 'use strict';
 const http = require('http');
 const pug = require('pug');
+const url = require("url");
 const mysql = require('promise-mysql');
 const querystring = require('querystring');
 
@@ -18,8 +19,14 @@ const server = http.createServer((req, res) => {
 
   switch (req.method) {
     case 'GET':
-      switch (req.url) {
+      //let url2 = url.trimQuery();
+      let choiceUrl = url.parse(req.url, true);//URLを解析する
+      let pathname = choiceUrl.pathname//解析したURLからpathnameの部分のみ抜き出す
+      switch (pathname) {
         case '/':
+          showTopPage(req, res);
+          break;
+        case '/page/one':
           showTopPage(req, res);
           break;
         case '/page/one':
@@ -99,10 +106,14 @@ function showTopPage(req, res) {
   //let entry = [];
   let entries = [];
   let tags = [];
+  let onepage;
+  let twopage;
+  let threepage;
   let next = "/page/two";
   let previous = "/page/three";
   let one = "page-item active";
-
+  let choiceUrl = url.parse(req.url, true);
+  let choiceUrl2 = url.parse(req.url);
 
   //let texts = [];
 
@@ -113,7 +124,20 @@ function showTopPage(req, res) {
     database: DB_NAME
   }).then((conn) => {
     connection = conn;
-    return connection.query("SELECT * FROM entry");
+    if (choiceUrl.query.id) {
+      onepage = "/page/one" + choiceUrl2.search;
+      twopage = "/page/two" + choiceUrl2.search;
+      threepage = "/page/three" + choiceUrl2.search;
+      return connection.query("select * from entry WHERE tag_id=(?)",
+        [
+          choiceUrl.query.id
+        ]);
+    } else {
+      onepage = "/page/one";
+      twopage = "/page/two";
+      threepage = "/page/three";
+      return connection.query("SELECT * FROM entry");
+    }
   }).then((rows) => {
     //entries = rows;
     if (rows.length < 6) {
@@ -123,6 +147,7 @@ function showTopPage(req, res) {
         entries.push(rows[i]);
       }
     }
+
     return connection.query('SELECT * FROM tag');
   }).then((rows) => {
     for (let row of rows) {
@@ -137,7 +162,10 @@ function showTopPage(req, res) {
       tags: tags,　　　//タグ？
       next: next,
       previous: previous,
-      one: one
+      one: one,
+      onepage: onepage,
+      twopage: twopage,
+      threepage: threepage
     }));
   }).then((rows) => {
     connection.end();
@@ -147,15 +175,18 @@ function showTopPage(req, res) {
   });
 }
 //セカンドページの実装
-function showTwoPage(req, res) {
+function showTwoPage(req, res, querynull, queryid) {
   let connection;
   let entries = [];
   let tags = [];
+  let onepage;
+  let twopage;
+  let threepage;
   let next = "/page/three";
   let previous = "/page/one";
   let two = "page-item active";
-  //let choiceUrl = "/entry/edit/update";
-  //let texts = [];
+  let choiceUrl = url.parse(req.url, true);
+  let choiceUrl2 = url.parse(req.url);
 
   mysql.createConnection({
     host: 'localhost',
@@ -164,7 +195,20 @@ function showTwoPage(req, res) {
     database: DB_NAME
   }).then((conn) => {
     connection = conn;
-    return connection.query("SELECT * FROM entry");
+    if (choiceUrl.query.id) {
+      onepage = "/page/one" + choiceUrl2.search;
+      twopage = "/page/two" + choiceUrl2.search;
+      threepage = "/page/three" + choiceUrl2.search;
+      return connection.query("select * from entry WHERE tag_id=(?)",
+        [
+          choiceUrl.query.id
+        ]);
+    } else {
+      onepage = "/page/one";
+      twopage = "/page/two";
+      threepage = "/page/three";
+      return connection.query("SELECT * FROM entry");
+    }
   }).then((rows) => {
     if (rows.length < 11) {
       for (let i = 5; i < rows.length; i++) {
@@ -190,7 +234,10 @@ function showTwoPage(req, res) {
       tags: tags,
       next: next,
       previous: previous,
-      two: two　　　//タグ？
+      two: two,　　　//タグ？
+      onepage: onepage,
+      twopage: twopage,
+      threepage: threepage
     }));
     connection.end();
     res.end();
@@ -200,16 +247,19 @@ function showTwoPage(req, res) {
 }
 
 //サードページの実装
-function showThreePage(req, res) {
+function showThreePage(req, res, querynull, queryid) {
   let connection;
   let entries = [];
   let tags = [];
+  let onepage;
+  let twopage;
+  let threepage;
   let next = "/page/one";
   let previous = "/page/two";
   let three = "page-item active";
-  //let choiceUrl = "/entry/edit/update";
-  //let texts = [];
-
+  let choiceUrl = url.parse(req.url, true);
+  let choiceUrl2 = url.parse(req.url);
+  
   mysql.createConnection({
     host: 'localhost',
     user: DB_USER,
@@ -217,7 +267,20 @@ function showThreePage(req, res) {
     database: DB_NAME
   }).then((conn) => {
     connection = conn;
-    return connection.query("SELECT * FROM entry");
+    if (choiceUrl.query.id) {
+      onepage = "/page/one" + choiceUrl2.search;
+      twopage = "/page/two" + choiceUrl2.search;
+      threepage = "/page/three" + choiceUrl2.search;
+      return connection.query("select * from entry WHERE tag_id=(?)",
+        [
+          choiceUrl.query.id
+        ]);
+    } else {
+      onepage = "/page/one";
+      twopage = "/page/two";
+      threepage = "/page/three";
+      return connection.query("SELECT * FROM entry");
+    }
   }).then((rows) => {
     if (rows.length < 16) {
       for (let i = 10; i < rows.length; i++) {
@@ -244,7 +307,10 @@ function showThreePage(req, res) {
       entries: entries,
       next: next,
       previous: previous,
-      three: three
+      three: three,
+      onepage: onepage,
+      twopage: twopage,
+      threepage: threepage
     }));
     connection.end();
     res.end();

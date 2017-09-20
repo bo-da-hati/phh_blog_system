@@ -22,7 +22,8 @@ html(lang="ja")
                 li
                   //- ハリボテ
                   a(href='/?' + val.query) #{val.tag.name}
-            //- ハリボテ
+                  //-'/?' + val.query
+            //- ハリボテ1
             a(href='/tag') タグ追加
 
         div(class="col-md-10")
@@ -59,12 +60,12 @@ html(lang="ja")
                   a(class="page-link" href=previous) Previous
                 li(class=one)
                   //-active
-                  a(class="page-link" href="/page/one") 1
+                  a(class="page-link" href=onepage) 1
                   //-span(class="sr-only") (current)
                 li(class=two)
-                  a(class="page-link" href="/page/two") 2
+                  a(class="page-link" href=twopage) 2
                 li(class=three)
-                  a(class="page-link" href="/page/three") 3
+                  a(class="page-link" href=threepage) 3
                 li(class="page-item")
                   a(class="page-link" href=next) Next
     footer
