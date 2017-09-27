@@ -13,11 +13,13 @@ CREATE TABLE `user` (
        `nickname` VARCHAR(32),	-- ニックネーム
        `blood_type_id` INT,	-- 血液型(blood_type テーブルの id に対応する
        `birthday` DATE,		-- 誕生日
+       `headerimg` VARCHAR(100),-- ヘッダーの画像
+       `profileimg` VARCHAR(100),
        -- `choiceblood`　VARCHAR(8) NOT NULL		     -- 選ばれた血液型
        `updated_at` timestamp not null default current_timestamp on update current_timestamp -- 更新日時
 );
 -- テストデータを挿入する
-INSERT INTO `user` (`name`, `nickname`, `blood_type_id`, `birthday`) VALUES ("両津勘吉", "両さん", 1, '1952-3-3');
+INSERT INTO `user` (`name`, `nickname`, `blood_type_id`, `birthday`, `headerimg`, `profileimg`) VALUES ("両津勘吉", "両さん", 1, '1952-3-3', 'http://i.imgur.com/QYeTiGd.jpg', 'http://www.petonlyone.com/koinu/border-collie/07.jpg');
 COMMIT;
 
 -- 血液型テーブルの削除と作成をする
